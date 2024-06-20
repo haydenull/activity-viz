@@ -1,5 +1,6 @@
 import type { LinksFunction } from '@remix-run/node'
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, Link, useLocation } from '@remix-run/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Package2 } from 'lucide-react'
 
 import { cn } from './lib/utils'
@@ -9,7 +10,7 @@ export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }]
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -38,6 +39,8 @@ const NavItem = ({ to, children, curPathname }: { to: string; children: React.Re
     </Link>
   )
 }
+
+const queryClient = new QueryClient()
 export default function App() {
   const location = useLocation()
 
@@ -71,11 +74,17 @@ export default function App() {
         </nav>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <Outlet />
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+        </QueryClientProvider>
       </main>
     </div>
   )
 }
+
+// export default function App() {
+//   return <div>xxx</div>
+// }
 
 export function HydrateFallback() {
   return <p>Loading...</p>
